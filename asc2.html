@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic ASCII Box with Typing Animation</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            
+            background-color: black;
+        }
+
+        #ascii-container {
+            font-family: monospace;
+            white-space: pre;
+            line-height: 1.4;
+            
+            overflow-wrap: normal; /* Change this to normal */
+            white-space: pre-wrap;
+            text-align: left;
+            width: 95vw; /* Adjust width to be responsive */
+            max-width: 800px; /* Optional: Max width for larger screens */
+            height: 80vh; /* Adjust height to be responsive */
+            max-height: 400px; /* Optional: Max height for larger screens */
+            overflow: hidden; /* Hide overflow content */
+            box-sizing: border-box; /* Include padding and border in width/height */
+            background-color: #000; /* Background color changed to black */
+            color: #06989A; /* Text color changed to white for better readability */
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/typewriter-effect@2.18.0/dist/core.js"></script>
+</head>
+<body>
+    <div id="ascii-container"></div>
+
+    <script>
+        function wrapLine(line, maxWidth) {
+            const wrappedLines = [];
+            const words = line.split(' ');
+            let currentLine = '';
+
+            words.forEach(word => {
+                if ((currentLine + word).length > maxWidth) {
+                    wrappedLines.push(currentLine.trim());
+                    currentLine = word + ' ';
+                } else {
+                    currentLine += word + ' ';
+                }
+            });
+
+            if (currentLine.length > 0) {
+                wrappedLines.push(currentLine.trim());
+            }
+
+            return wrappedLines;
+        }
+
+        const content = `Case Studies\n\nMetLife Global Rebranding & Design System\nChallenge: MetLife needed to transition from its Snoopy-centric brand to a more professional image while maintaining consistency across 40 global markets.\n\nSolution: Developed a comprehensive design system that:\n- Launched the first global rebranding in 30 years\n- Created a global framework adaptable to local market needs to reduce costs\n- Implemented consistent UX/UI elements, typography, and color schemes\n- Developed modular components for efficient use by global teams and agencies\n- Integrated accessibility features throughout the design system\n- Provided tools and guidelines for managing the system across markets\n\nResult: Achieved a 50% lift in consideration in key markets, a 33% increase in user logins and 40% boost in new customer conversion rates. The system enabled consistent yet locally relevant experiences across 40 markets, from B2B focus in the US to retail insurance in Japan, while significantly improving operational efficiency for global teams.`;
+
+        const container = document.getElementById("ascii-container");
+
+        function updateBox() {
+            container.innerHTML = '';
+            const maxWidthChars = Math.floor(container.clientWidth / 8);
+            const contentLines = content.split('\n').flatMap(line => wrapLine(line, maxWidthChars));
+            const maxLength = Math.max(...contentLines.map(line => line.length));
+
+            // Create ASCII box structure with borders and content
+            const borderLine = `+${'-'.repeat(maxLength + 2)}+`;
+            const asciiBoxLines = [borderLine];
+            contentLines.forEach(line => {
+                asciiBoxLines.push(`| ${line.padEnd(maxLength)} |`);
+            });
+            asciiBoxLines.push(borderLine);
+
+            // Initialize Typewriter.js for typing each line of the box sequentially
+            const typewriter = new Typewriter(container, {
+                loop: false,
+                delay: 10,
+            });
+
+            asciiBoxLines.forEach(line => {
+                typewriter
+                    .typeString(line + '\n')
+                    .pauseFor(10);
+            });
+
+            typewriter.start();
+        }
+
+        // Update box on load
+        updateBox();
+
+        // Update box on window resize
+        window.addEventListener('resize', updateBox);
+    </script>
+</body>
+</html>

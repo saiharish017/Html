@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Reveal Line by Line</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #000; /* Background color black */
+        }
+
+        #image-container {
+            width: 80vw;
+            height: 90vh;
+            max-width: 800px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 5%; /* Height of each line */
+            background: url('general.jpg') no-repeat center center / cover; /* Use your image URL here */
+            overflow: hidden;
+        }
+
+        .image-reveal {
+            animation: reveal 1s ease forwards;
+        }
+
+        @keyframes reveal {
+            from { height: 100%; }
+            to { height: 0%; }
+        }
+
+        .cursor {
+            position: absolute;
+            display: inline-block;
+            width: 2px;
+            height: 20px;
+            background-color: #fff;
+            animation: blink 0.5s step-end infinite alternate;
+        }
+
+        @keyframes blink {
+            50% { background-color: transparent; }
+        }
+    </style>
+</head>
+<body>
+    <div id="image-container">
+        <div class="cursor"></div>
+    </div>
+
+    <script>
+        const container = document.getElementById("image-container");
+        const cursor = document.querySelector(".cursor");
+        const imageURL = 'your-image-url.jpg'; // Replace with your image URL
+        const totalLines = 20; // Number of lines to reveal the image
+        const containerHeight = container.clientHeight;
+        const lineHeight = containerHeight / totalLines;
+
+        for (let i = 0; i < totalLines; i++) {
+            const line = document.createElement('div');
+            line.className = 'line';
+            line.style.top = `${i * lineHeight}px`;
+            line.style.height = `${lineHeight}px`;
+            line.style.backgroundPositionY = `${-i * lineHeight}px`;
+            container.appendChild(line);
+
+            setTimeout(() => {
+                line.classList.add('image-reveal');
+                cursor.style.top = `${(i + 1) * lineHeight}px`;
+            }, i * 300); // Adjust timing for the reveal effect
+        }
+    </script>
+</body>
+</html>
