@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Effect Text Mask</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            background-color: black;
+        }
+
+        #ascii-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            font-size: 12px;
+            line-height: 12px;
+            color: transparent;
+            background-image: url('general.png'); /* Replace with your image path */
+            background-size: cover;
+            background-position: center;
+            background-clip: text;
+            -webkit-background-clip: text; /* Safari support */
+            font-family: monospace;
+            white-space: pre; /* Preserve spaces and line breaks */
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ASCII container that will be dynamically filled with # symbols in typing effect -->
+    <div id="ascii-container"></div>
+
+    <script>
+        const asciiContainer = document.getElementById("ascii-container");
+
+        function typeEffect() {
+            // Clear the container
+            asciiContainer.innerHTML = '';
+            
+            // Get viewport dimensions
+            const containerWidth = window.innerWidth;
+            const containerHeight = window.innerHeight;
+
+            // Calculate columns and rows based on 12px font size
+            const columns = Math.floor(containerWidth / 12);
+            const rows = Math.floor(containerHeight / 12);
+
+            // Create a 2D array of # symbols to represent rows and columns
+            let asciiArtArray = [];
+            for (let i = 0; i < rows; i++) {
+                asciiArtArray.push('#'.repeat(columns));
+            }
+
+            // Flatten the array to a single string with line breaks
+            const asciiArt = asciiArtArray.join('\n');
+
+            let currentIndex = 0; // Start typing from the first character
+
+            function typeNextChar() {
+                if (currentIndex < asciiArt.length) {
+                    // Add the next character, which may include line breaks
+                    asciiContainer.innerHTML = asciiArt.substring(0, currentIndex + 1);
+                    currentIndex++;
+                    setTimeout(typeNextChar, 5); // Adjust typing speed here
+                }
+            }
+
+            // Start the typing effect
+            typeNextChar();
+        }
+
+        // Initialize typing effect on page load
+        window.onload = typeEffect;
+
+        // Recalculate ASCII text if the window is resized
+        window.addEventListener("resize", typeEffect);
+    </script>
+
+</body>
+</html>

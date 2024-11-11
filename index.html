@@ -11,7 +11,6 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
-            
             background-color: black;
         }
 
@@ -19,18 +18,18 @@
             font-family: monospace;
             white-space: pre;
             line-height: 1.4;
-            
-            overflow-wrap: normal; /* Change this to normal */
+            overflow-wrap: normal;
             white-space: pre-wrap;
             text-align: left;
-            width: 95vw; /* Adjust width to be responsive */
-            max-width: 800px; /* Optional: Max width for larger screens */
-            height: 80vh; /* Adjust height to be responsive */
-            max-height: 400px; /* Optional: Max height for larger screens */
-            overflow: hidden; /* Hide overflow content */
-            box-sizing: border-box; /* Include padding and border in width/height */
-            background-color: #000; /* Background color changed to black */
-            color: #06989A; /* Text color changed to white for better readability */
+            width: calc(100vw - 60px); /* 30px padding on each side */
+            height: calc(100vh - 60px); /* 30px padding on top and bottom */
+            max-width: 800px;
+            max-height: 600px;
+            overflow: hidden;
+            box-sizing: border-box;
+            background-color: #000;
+            color: #06989A;
+            padding: 15px; /* Padding between border and text */
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/typewriter-effect@2.18.0/dist/core.js"></script>
@@ -60,22 +59,46 @@
             return wrappedLines;
         }
 
-        const content = `Case Studies\n\nMetLife Global Rebranding & Design System\nChallenge: MetLife needed to transition from its Snoopy-centric brand to a more professional image while maintaining consistency across 40 global markets.\n\nSolution: Developed a comprehensive design system that:\n- Launched the first global rebranding in 30 years\n- Created a global framework adaptable to local market needs to reduce costs\n- Implemented consistent UX/UI elements, typography, and color schemes\n- Developed modular components for efficient use by global teams and agencies\n- Integrated accessibility features throughout the design system\n- Provided tools and guidelines for managing the system across markets\n\nResult: Achieved a 50% lift in consideration in key markets, a 33% increase in user logins and 40% boost in new customer conversion rates. The system enabled consistent yet locally relevant experiences across 40 markets, from B2B focus in the US to retail insurance in Japan, while significantly improving operational efficiency for global teams.`;
+        const content = `MetLife Global Rebranding & Design System\nChallenge: MetLife needed to transition from its Snoopy-centric brand to a more professional image while maintaining consistency across 40 global markets.\n\nSolution: Developed a comprehensive design system that:\n- Launched the first global rebranding in 30 years\n- Created a global framework adaptable to local market needs to reduce costs\n- Implemented consistent UX/UI elements, typography, and color schemes\n- Developed modular components for efficient use by global teams and agencies\n- Integrated accessibility features throughout the design system\n- Provided tools and guidelines for managing the system across markets\n\nResult: Achieved a 50% lift in consideration in key markets, a 33% increase in user logins and 40% boost in new customer conversion rates. The system enabled consistent yet locally relevant experiences across 40 markets, from B2B focus in the US to retail insurance in Japan, while significantly improving operational efficiency for global teams.`;
 
         const container = document.getElementById("ascii-container");
 
         function updateBox() {
             container.innerHTML = '';
             const maxWidthChars = Math.floor(container.clientWidth / 8);
+            const maxHeightChars = Math.floor(container.clientHeight / 20);
             const contentLines = content.split('\n').flatMap(line => wrapLine(line, maxWidthChars));
             const maxLength = Math.max(...contentLines.map(line => line.length));
+
+            // Add padding lines to vertically center content within the box
+            const topPadding = Math.floor((maxHeightChars - contentLines.length - 1) / 2); // -1 for the additional line
+            const emptyLine = `| ${' '.repeat(maxLength)} |`;
 
             // Create ASCII box structure with borders and content
             const borderLine = `+${'-'.repeat(maxLength + 2)}+`;
             const asciiBoxLines = [borderLine];
+
+            // Add top padding lines
+            for (let i = 0; i < topPadding; i++) {
+                asciiBoxLines.push(emptyLine);
+            }
+
+            // Add "Case Studies" title and underline it
+            const title = "Case Studies".padStart(Math.floor((maxLength + "Case Studies".length) / 2)).padEnd(maxLength);
+            asciiBoxLines.push(`| ${title} |`);
+            asciiBoxLines.push(`| ${'-'.repeat(maxLength)} |`); // Horizontal line after "Case Studies"
+
+            // Add the rest of the content, centered horizontally
             contentLines.forEach(line => {
-                asciiBoxLines.push(`| ${line.padEnd(maxLength)} |`);
+                const paddedLine = line.padStart(Math.floor((maxLength + line.length) / 2)).padEnd(maxLength);
+                asciiBoxLines.push(`| ${paddedLine} |`);
             });
+
+            // Add bottom padding lines
+            for (let i = 0; i < topPadding; i++) {
+                asciiBoxLines.push(emptyLine);
+            }
+
             asciiBoxLines.push(borderLine);
 
             // Initialize Typewriter.js for typing each line of the box sequentially
