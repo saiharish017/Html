@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic ASCII Box with Typing Animation</title>
+    <style>
+         .asciiArt {
+       
+        
+        white-space: pre;
+        
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+        overflow: hidden;
+        display: flex;
+    }
+    .asciiArtHidden {
+        display: none;
+    }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/typewriter-effect@2.18.0/dist/core.js"></script>
+</head>
+<body>
+    <p class="asciiArtHidden">
+        ___            ___           ___           ___           ___           ___           ___
+       /|  |          /\__\         /\  \         /\  \         /\  \         /|  |         /\__\
+      |:|  |         /:/ _/_       _\:\  \       /::\  \       /::\  \       |:|  |        /:/ _/_ 
+      |:|  |        /:/ /\__\     /\ \:\  \     /:/\:\  \     /:/\:\__\      |:|  |       /:/ /\  \
+    __|:|__|       /:/ /:/  /    _\:\ \:\  \   /:/  \:\  \   /:/ /:/  /    __|:|  |      /:/ /::\  \
+   /::::\__\_____ /:/_/:/  /    /\ \:\ \:\__\ /:/__/ \:\__\ /:/_/:/__/___ /\ |:|__|____ /:/_/:/\:\__\
+   ~~~~\::::/___/ \:\/:/  /     \:\ \:\/:/  / \:\  \ /:/  / \:\/:::::/  / \:\/:::::/__/ \:\/:/ /:/  /
+      |:|~~|      \::/__/       \:\ \::/  /   \:\  /:/  /   \::/~~/~~~~   \::/~~/~      \::/ /:/  /
+      |:|  |       \:\  \        \:\/:/  /     \:\/:/  /     \:\~~\        \:\~~\        \/_/:/  /
+      |:|__|        \:\__\        \::/  /       \::/  /       \:\__\        \:\__\         /:/  /
+      |/__/          \/__/         \/__/         \/__/         \/__/         \/__/         \/__/
+  </p>
+  <p class="asciiArt"></p>
+    <script>
+   function getAsciiCharDimensions() {
+        const span = document.createElement("span");
+        span.style.fontFamily = "monospace";
+        span.style.visibility = "hidden";
+        span.textContent = "#";
+        document.body.appendChild(span);
+        const charWidth = span.getBoundingClientRect().width;
+        const charHeight = span.getBoundingClientRect().height;
+        document.body.removeChild(span);
+        return { charWidth, charHeight };
+    }
+
+    function createFittedAsciiBox(text) {
+            // Split the text into lines, ensuring one space on each side of each line
+    const lines = text.split('\n').map(line => ` ${line.trim()} `); 
+
+// Find the maximum line length after padding (add 2 for the spaces at the edges)
+const maxLength = Math.max(...lines.map(line => line.length)) + 2; 
+
+// Create the border line based on maxLength
+const borderLine = `+${'-'.repeat(maxLength - 2)}+`; 
+const asciiBoxLines = [borderLine];
+
+// Add each line with the same padded length
+lines.forEach(line => {
+    const paddedLine = line.padEnd(maxLength - 2); // Ensures all lines match maxLength
+    asciiBoxLines.push(`|${paddedLine}|`);
+});
+
+asciiBoxLines.push(borderLine); // Bottom border
+        return asciiBoxLines;
+    }
+
+    function initializeFittedAsciiBox() {
+        const preElement = document.querySelector(".asciiArt");
+        const originalContent = document.querySelector(".asciiArtHidden").textContent.trim();
+        const asciiBoxLines = createFittedAsciiBox(originalContent);
+        const delay = 1000 / asciiBoxLines.length;
+        let lineIndex = 0;
+
+        function typeLine() {
+            if (lineIndex < asciiBoxLines.length) {
+                preElement.textContent += asciiBoxLines[lineIndex] + '\n';
+                lineIndex++;
+                setTimeout(typeLine, delay);
+            }
+        }
+        typeLine();
+    }
+
+    function updateFittedAsciiBox() {
+        const preElement = document.querySelector(".asciiArt");
+        const originalContent = document.querySelector(".asciiArtHidden").textContent.trim();
+        const asciiBoxLines = createFittedAsciiBox(originalContent);
+        preElement.textContent = asciiBoxLines.join('\n');
+    }
+
+    // Initialize and update on resize
+    initializeFittedAsciiBox();
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(updateFittedAsciiBox, 200);
+    });
+    </script>
+</body>
+</html>

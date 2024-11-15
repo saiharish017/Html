@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Full Width & Height ASCII Border</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: black;
+        }
+        .asciiArt {
+            color: #06989A;
+            font-family: 'VT323', monospace; /* Use VT323 font */
+            white-space: pre;
+            width: 98vw;
+            height: 98vh;
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .asciiArtHidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <pre class="asciiArt"></pre>
+    <pre class="asciiArtHidden">
+        ___            ___           ___           ___           ___           ___           ___
+       /|  |          /\__\         /\  \         /\  \         /\  \         /|  |         /\__\
+      |:|  |         /:/ _/_       _\:\  \       /::\  \       /::\  \       |:|  |        /:/ _/_  
+      |:|  |        /:/ /\__\     /\ \:\  \     /:/\:\  \     /:/\:\__\      |:|  |       /:/ /\  \ 
+    __|:|__|       /:/ /:/  /    _\:\ \:\  \   /:/  \:\  \   /:/ /:/  /    __|:|  |      /:/ /::\  \
+   /::::\__\_____ /:/_/:/  /    /\ \:\ \:\__\ /:/__/ \:\__\ /:/_/:/__/___ /\ |:|__|____ /:/_/:/\:\__\
+   ~~~~\::::/___/ \:\/:/  /     \:\ \:\/:/  / \:\  \ /:/  / \:\/:::::/  / \:\/:::::/__/ \:\/:/ /:/  / 
+      |:|~~|      \::/__/       \:\ \::/  /   \:\  /:/  /   \::/~~/~~~~   \::/~~/~      \::/ /:/  /  
+      |:|  |       \:\  \        \:\/:/  /     \:\/:/  /     \:\~~\        \:\~~\        \/_/:/  /   
+      |:|__|        \:\__\        \::/  /       \::/  /       \:\__\        \:\__\         /:/  /    
+      |/__/          \/__/         \/__/         \/__/         \/__/         \/__/         \/__/     
+      </pre>
+
+    <script>
+       
+        
+        // Function to calculate character dimensions based on VT323 font
+        function getCharacterDimensions() {
+            const span = document.createElement("span");
+            span.style.fontFamily = "VT323, monospace";  // Set the font to VT323
+            span.style.visibility = "hidden"; // Hide the element
+            span.textContent = "W";           // Use a wide character for a better measurement
+
+            document.body.appendChild(span);
+            const charWidth = span.getBoundingClientRect().width;
+            const charHeight = span.getBoundingClientRect().height;
+
+            document.body.removeChild(span);
+
+            return { charWidth, charHeight };
+        }
+
+        // Function to create an ASCII box around text
+        function createAsciiBox(text) {
+            const lines = text.split('\n');
+            const preElement = document.querySelector(".asciiArt");
+
+            // Calculate character-based dimensions
+            const { charWidth, charHeight } = getCharacterDimensions();
+
+            // Calculate columns and rows to fit exactly within 98vw and 98vh
+            const availableWidth = preElement.clientWidth;
+            const availableHeight = preElement.clientHeight;
+            const numCols = Math.floor(availableWidth / charWidth);
+            const numRows = Math.floor(availableHeight / charHeight);
+
+            // ASCII border lines
+            const borderLine = `+${'-'.repeat(numCols - 2)}+`;
+            const emptyLine = `|${' '.repeat(numCols - 2)}|`;
+
+            // Build ASCII box lines
+            const asciiBoxLines = [borderLine];
+
+            // Centering content with vertical padding
+            const topPaddingLines = Math.floor((numRows - lines.length - 2) / 2);
+            for (let i = 0; i < topPaddingLines; i++) {
+                asciiBoxLines.push(emptyLine);
+            }
+
+            // Center text lines horizontally
+            lines.forEach(line => {
+                const trimmedLine = line.trim();
+                const paddedLine = trimmedLine.padStart(Math.floor((numCols + trimmedLine.length) / 2)).padEnd(numCols - 2);
+                asciiBoxLines.push(`|${paddedLine}|`);
+            });
+
+            // Add bottom padding and close the ASCII box
+            for (let i = 0; i < topPaddingLines; i++) {
+                asciiBoxLines.push(emptyLine);
+            }
+            asciiBoxLines.push(borderLine);
+
+            return asciiBoxLines.join('\n');
+        }
+
+        //Function to update the ASCII box when resizing the window
+       
+    
+    // Rest of your code
+
+
+        function updateAsciiBox() {
+            const preElement = document.querySelector(".asciiArt");
+            const asciiArtHidden = document.querySelector(".asciiArtHidden");
+            
+  
+            // Clear any existing content (e.g., remove old borders or text)
+            preElement.innerHTML = "";
+            const originalContent = asciiArtHidden.textContent.trim();  // Store original text
+            const newAsciiBox = createAsciiBox(originalContent);    // Apply the new ASCII box with original content
+
+            // Check if the content really needs to be updated
+            if (preElement.textContent !== newAsciiBox) {
+                preElement.textContent = newAsciiBox;
+            }
+        }
+
+        // Apply ASCII box initially
+        
+        
+        updateAsciiBox();
+
+        // Add resize event listener to update the box on screen resize
+        window.addEventListener('resize', function() {
+            updateAsciiBox();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Typing Text with Dotted Border Effect</title>
+  <style>
+    /* Wrapper for the typing effect */
+    .typing-container {
+      border: 2px dotted black;      /* Initial dotted border */
+      padding: 20px;                 /* Space inside the border */
+      width: max-content;
+      overflow: hidden;
+      white-space: nowrap;
+      animation: grow-border 2s ease-in-out forwards;
+    }
+
+    /* Animating the border to grow */
+    @keyframes grow-border {
+      0% { border-width: 0; }
+      100% { border-width: 2px; }
+    }
+
+    /* Cursor blinking effect */
+    .typing-text::after {
+      content: "|";
+      animation: blink 0.5s step-end infinite;
+    }
+
+    /* Blinking cursor */
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="typing-container">
+    <p class="typing-text" id="typingText"></p>
+  </div>
+
+  <script>
+    const text = "This is a typing effect with a dotted border!";
+    const typingElement = document.getElementById('typingText');
+    let index = 0;
+
+    function typeText() {
+      if (index < text.length) {
+        typingElement.innerHTML += text.charAt(index);
+        index++;
+        setTimeout(typeText, 100); // Adjust speed here
+      } else {
+        // Remove the blinking cursor after typing is complete
+        typingElement.classList.remove('typing-text');
+      }
+    }
+
+    typeText();
+  </script>
+</body>
+</html>

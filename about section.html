@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASCII Border with 1-Character Padding</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: black;
+        }
+        .asciiArt {
+            color: #06989A;
+            font-family: 'VT323', monospace;
+            white-space: pre;
+            padding: 0;
+            width: 100%;
+            margin: 20px;
+            box-sizing: border-box;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .asciiArtHidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <p class="asciiArt"></p>
+    <p class="asciiArtHidden">
+        About Us:
+        We are committed to delivering excellence in every project.
+        Our team combines creativity with technical expertise
+        to provide solutions that exceed expectations.
+    </p>
+
+    <script>
+        function createAsciiBox(text) {
+            const lines = text.split('\n').map(line => ` ${line.trim()} `); // Add 1 space padding to each line
+            const maxLength = Math.max(...lines.map(line => line.length));
+            const borderLine = `+${'-'.repeat(maxLength)}+`;
+            const emptyLine = `|${' '.repeat(maxLength)}|`;
+            
+            const asciiBoxLines = [borderLine, emptyLine];
+            
+            lines.forEach(line => {
+                const paddedLine = line.padEnd(maxLength); // Ensure all lines are equal in length
+                asciiBoxLines.push(`|${paddedLine}|`);
+            });
+            
+            asciiBoxLines.push(emptyLine, borderLine);
+            
+            return asciiBoxLines.join('\n');
+        }
+
+        function updateAsciiBox() {
+            const preElement = document.querySelector(".asciiArt");
+            const hiddenContent = document.querySelector(".asciiArtHidden").textContent.trim();
+            const asciiBox = createAsciiBox(hiddenContent);
+            preElement.textContent = asciiBox;
+        }
+
+        // Initialize ASCII box on page load and on resize
+        updateAsciiBox();
+        window.addEventListener('resize', updateAsciiBox);
+    </script>
+</body>
+</html>

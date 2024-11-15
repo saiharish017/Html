@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Responsive ASCII Border</title>
+  <style>
+    .ascii-border-container {
+      position: relative;
+      padding: 10px;
+      font-family: monospace;
+      white-space: nowrap;
+      display: inline-block;
+    }
+
+    /* ASCII Borders */
+    .ascii-border-top,
+    .ascii-border-bottom,
+    .ascii-border-left,
+    .ascii-border-right {
+      position: absolute;
+      font-family: monospace;
+      color: black;
+    }
+
+    /* Positioning for ASCII border */
+    .ascii-border-top {
+      top: 0;
+      left: 0;
+      transform: translateY(-100%);
+    }
+
+    .ascii-border-bottom {
+      bottom: 0;
+      left: 0;
+      transform: translateY(100%);
+    }
+
+    .ascii-border-left {
+      top: 0;
+      left: -1ch;
+    }
+
+    .ascii-border-right {
+      top: 0;
+      right: -1ch;
+    }
+
+    /* Hover effect */
+    .ascii-border-container:hover .ascii-border-top,
+    .ascii-border-container:hover .ascii-border-bottom,
+    .ascii-border-container:hover .ascii-border-left,
+    .ascii-border-container:hover .ascii-border-right {
+      color: darkblue;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ascii-border-container" id="asciiContainer">
+    <p id="typingText">This is a responsive ASCII border!</p>
+  </div>
+
+  <script>
+    function updateAsciiBorder() {
+      const container = document.getElementById('asciiContainer');
+      
+  
+  // Clear any existing content (e.g., remove old borders or text)
+      container.innerHTML = "";
+      
+      // Get width of the container to calculate top/bottom border length
+      const width = container.offsetWidth;
+      const charCount = Math.floor(width / 10); // Approximate width of a character
+
+      // Generate top and bottom ASCII borders
+      const topBorder = '+' + '-'.repeat(charCount - 2) + '+';
+      const bottomBorder = '+' + '-'.repeat(charCount - 2) + '+';
+      const sideBorder = '|';
+
+      // Create or update border elements
+      let topElement = container.querySelector('.ascii-border-top');
+      let bottomElement = container.querySelector('.ascii-border-bottom');
+      let leftElement = container.querySelector('.ascii-border-left');
+      let rightElement = container.querySelector('.ascii-border-right');
+
+      // If the elements don't exist, create them
+      if (!topElement) {
+        topElement = document.createElement('div');
+        bottomElement = document.createElement('div');
+        leftElement = document.createElement('div');
+        rightElement = document.createElement('div');
+
+        topElement.className = 'ascii-border-top';
+        bottomElement.className = 'ascii-border-bottom';
+        leftElement.className = 'ascii-border-left';
+        rightElement.className = 'ascii-border-right';
+
+        container.appendChild(topElement);
+        container.appendChild(bottomElement);
+        container.appendChild(leftElement);
+        container.appendChild(rightElement);
+      }
+
+      // Set content for top and bottom borders
+      topElement.textContent = topBorder;
+      bottomElement.textContent = bottomBorder;
+
+      // Calculate height for side borders
+      const height = container.offsetHeight;
+      const lineCount = Math.floor(height / 20); // Approximate height of a line
+
+      leftElement.innerHTML = Array(lineCount).fill(sideBorder).join('<br>');
+      rightElement.innerHTML = Array(lineCount).fill(sideBorder).join('<br>');
+    }
+
+    // Initialize the ASCII border and update on window resize
+    updateAsciiBorder();
+    window.addEventListener('resize', updateAsciiBorder);
+  </script>
+
+</body>
+</html>
