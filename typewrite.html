@@ -48,6 +48,7 @@
             }
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/typewriter-effect@2.18.0/dist/core.js"></script>
 </head>
 <body>
     <div id="ascii-container"></div>
@@ -120,61 +121,35 @@
         }
     
         function initTypingAnimation() {
-    const asciiBox = generateAsciiBox();
-
-    // Break the asciiBox into lines
-    const asciiBoxLines = asciiBox.split('\n');
-    let lineIndex = 0;
-    let charIndex = 0;
-
-    // Calculate delay for typing speed to fit within 1-2 seconds
-    const totalCharacters = asciiBox.length; // Include newlines
-    const totalDuration = 20; // Desired duration in ms (2 seconds)
-    const delay = totalDuration / totalCharacters;; // Ensure a minimum delay of 10ms per character
-
-    // Create a blinking cursor element
-    const cursorChar = '_';
-    const cursorBlinkDelay = 500; // Blinking delay for cursor (ms)
-
-    let cursorVisible = true; // Track cursor visibility for blinking
-
-    // Recursive function to type each line
-    function typeLine() {
-        if (lineIndex < asciiBoxLines.length) {
-            const currentLine = asciiBoxLines[lineIndex];
-            if (charIndex < currentLine.length) {
-                // Add the current character along with the cursor
-                container.textContent = container.textContent.slice(0, -1) + currentLine[charIndex] + cursorChar;
-                charIndex++;
-                setTimeout(typeLine, delay); // Continue typing the next character
-            } else {
-                // Move to the next line
-                container.textContent = container.textContent.slice(0, -1) + '\n' + cursorChar;
-                charIndex = 0;
-                lineIndex++;
-                setTimeout(typeLine, delay); // Continue with the next line
-            }
-        } else {
-            // Typing complete; keep the blinking cursor visible
-            setInterval(() => {
-                if (cursorVisible) {
-                    container.textContent = container.textContent.slice(0, -1); // Remove cursor
-                } else {
-                    container.textContent += cursorChar; // Add cursor
-                }
-                cursorVisible = !cursorVisible; // Toggle visibility
-            }, cursorBlinkDelay);
+            const asciiBox = generateAsciiBox();
+    
+            // Calculate typing delay based on total characters for a 1-second duration
+            const totalChars = 0;
+            const delay = 0; // No delay between characters for fast animation
+    
+            // Create a cursor element
+            const cursor = document.createElement('span');
+            cursor.classList.add('cursor');
+            container.appendChild(cursor); // Add cursor to the container
+            
+            const typewriter = new Typewriter(container, {
+                loop: false,
+                delay: 0,
+                typingDelay: 0,
+                cursor: '_'  // Disable default Typewriter cursor
+            });
+    
+            asciiBox.split('\n').forEach(line => {
+                typewriter.typeString(line + '\n').pauseFor(0);
+            });
+    
+            typewriter.start();
+    
+            // Ensure the cursor stays at the end
+            typewriter.on('typing', () => {
+                container.appendChild(cursor);  // Keep the cursor at the end
+            });
         }
-    }
-
-    // Start typing animation
-    container.textContent = cursorChar; // Initialize with the blinking cursor
-    typeLine();
-}
-
-
-
-
     
         // Initialize typing animation only once
         initTypingAnimation();
