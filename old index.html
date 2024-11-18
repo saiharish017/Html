@@ -74,18 +74,7 @@
             return wrappedLines;
         }
     
-        const content = `MetLife Global Rebranding & Design System
-    Challenge: MetLife needed to transition from its Snoopy-centric brand to a more professional image while maintaining consistency across 40 global markets.
-    
-    Solution: Developed a comprehensive design system that:
-    - Launched the first global rebranding in 30 years
-    - Created a global framework adaptable to local market needs to reduce costs
-    - Implemented consistent UX/UI elements, typography, and color schemes
-    - Developed modular components for efficient use by global teams and agencies
-    - Integrated accessibility features throughout the design system
-    - Provided tools and guidelines for managing the system across markets
-    
-    Result: Achieved a 50% lift in consideration in key markets, a 33% increase in user logins and 40% boost in new customer conversion rates. The system enabled consistent yet locally relevant experiences across 40 markets, from B2B focus in the US to retail insurance in Japan, while significantly improving operational efficiency for global teams.`;
+        const content = `The unit's heritage stems from World War II, with the creation of the 50th Parachute Brigade in October 1941 under the British Indian Army. 9 Para (SF) was raised in 1965 as the 9th Parachute Commando Battalion (as part of the Parachute Regiment) and is the oldest among the fifteen Para (SF) units of the Indian Army. It has been involved in various operations including the Indo-Pakistan war of 1971 (including Chachro Raid), Operation Bluestar, Operation Pawan, Operation Cactus, Kargil War, Operation Ginger, 2015 Indian counter-insurgency operation in Myanmar, 2016 Pampore stand-off, 2016 Indian Line of Control strike and in several anti-terror operations.`;
     
         const container = document.getElementById("ascii-container");
     
@@ -105,7 +94,7 @@
     
             // Add the rest of the content, right-aligned
             contentLines.forEach(line => {
-                const paddedLine = line.padStart(maxLength); // Right-align the text
+                const paddedLine = line.padEnd(maxLength); // Right-align the text
                 asciiBoxLines.push(`| ${paddedLine} |`);
             });
     
@@ -116,6 +105,7 @@
     
         function displayAsciiBox() {
             const asciiBox = generateAsciiBox();
+            container.textContent = "";
             container.textContent = asciiBox;
         }
     
@@ -144,6 +134,7 @@
             const currentLine = asciiBoxLines[lineIndex];
             if (charIndex < currentLine.length) {
                 // Add the current character along with the cursor
+
                 container.textContent = container.textContent.slice(0, -1) + currentLine[charIndex] + cursorChar;
                 charIndex++;
                 setTimeout(typeLine, delay); // Continue typing the next character
