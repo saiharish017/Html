@@ -1,0 +1,99 @@
+<style>
+    .asciiArt {
+        color: #06989A;
+        font-family: monospace; /* Use VT323 font */
+        white-space: pre;
+        width: 98vw;
+        height: 98vh;
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+        overflow: hidden;
+        display: flex;
+        
+    }
+    .asciiArtHidden {
+        display: none;
+    }
+</style>
+
+<pre class= "asciiArtHidden" >
+    ___            ___           ___           ___           ___           ___           ___
+   /|  |          /\__\         /\  \         /\  \         /\  \         /|  |         /\__\
+  |:|  |         /:/ _/_       _\:\  \       /::\  \       /::\  \       |:|  |        /:/ _/_
+  |:|  |        /:/ /\__\     /\ \:\  \     /:/\:\  \     /:/\:\__\      |:|  |       /:/ /\  \
+__|:|__|       /:/ /:/  /    _\:\ \:\  \   /:/  \:\  \   /:/ /:/  /    __|:|  |      /:/ /::\  \
+/::::\__\_____ /:/_/:/  /    /\ \:\ \:\__\ /:/__/ \:\__\ /:/_/:/__/___ /\ |:|__|____ /:/_/:/\:\__\
+~~~~\::::/___/ \:\/:/  /     \:\ \:\/:/  / \:\  \ /:/  / \:\/:::::/  / \:\/:::::/__/ \:\/:/ /:/  /
+|:|~~|      \::/__/       \:\ \::/  /   \:\  /:/  /   \::/~~/~~~~   \::/~~/~      \::/ /:/  /
+|:|  |       \:\  \        \:\/:/  /     \:\/:/  /     \:\~~\        \:\~~\        \/_/:/  /
+|:|__|        \:\__\        \::/  /       \::/  /       \:\__\        \:\__\         /:/  /
+|/__/          \/__/         \/__/         \/__/         \/__/         \/__/         \/__/
+</pre>
+<pre class="asciiArt"></pre>
+<script>
+    function getCharacterDimensions() {
+        const span = document.createElement("span");
+        span.style.fontFamily = "monospace";
+        span.style.visibility = "hidden";
+        span.textContent = "#";
+        document.body.appendChild(span);
+        const charWidth = span.getBoundingClientRect().width;
+        const charHeight = span.getBoundingClientRect().height;
+        document.body.removeChild(span);
+        return { charWidth, charHeight };
+    }
+
+    function createAsciiBox(text) {
+        const lines = text.split('\n');
+        const preElement = document.querySelector(".asciiArt");
+        const { charWidth, charHeight } = getCharacterDimensions();
+        const availableWidth = preElement.clientWidth;
+        const availableHeight = preElement.clientHeight;
+        const numCols = Math.floor(availableWidth / charWidth);
+        const numRows = Math.floor(availableHeight / charHeight);
+        const borderLine = `+${'-'.repeat(numCols - 2)}+`;
+        const emptyLine = `|${' '.repeat(numCols - 2)}|`;
+        const asciiBoxLines = [borderLine];
+        const topPaddingLines = Math.floor((numRows - lines.length - 2) / 2);
+        for (let i = 0; i < topPaddingLines; i++) asciiBoxLines.push(emptyLine);
+        lines.forEach(line => {
+            const paddedLine = line.trim().padStart((numCols + line.length) / 2).padEnd(numCols - 2);
+            asciiBoxLines.push(`|${paddedLine}|`);
+        });
+        for (let i = 0; i < topPaddingLines; i++) asciiBoxLines.push(emptyLine);
+        asciiBoxLines.push(borderLine);
+        return asciiBoxLines;
+    }
+
+    function initialAsciiBox() {
+        const preElement = document.querySelector(".asciiArt");
+        const originalContent = document.querySelector(".asciiArtHidden").textContent.trim();
+        const asciiBoxLines = createAsciiBox(originalContent);
+        const delay = 1000 / asciiBoxLines.length;
+        let lineIndex = 0;
+
+        function typeLine() {
+            if (lineIndex < asciiBoxLines.length) {
+                preElement.textContent += asciiBoxLines[lineIndex] + '\n';
+                lineIndex++;
+                setTimeout(typeLine, delay);
+            }
+        }
+        typeLine();
+    }
+
+    function updateAsciiBox() {
+        const preElement = document.querySelector(".asciiArt");
+        const originalContent = document.querySelector(".asciiArtHidden").textContent.trim();
+        const asciiBoxLines = createAsciiBox(originalContent);
+        preElement.textContent = asciiBoxLines.join('\n');
+    }
+
+    initialAsciiBox();
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(updateAsciiBox, 200);
+    });
+</script>
