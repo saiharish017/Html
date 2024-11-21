@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive ASCII Art with Typing Effect</title>
+    <style>
+        .asciiArt {
+            color: #06989A;
+            font-family: monospace;
+            white-space: pre;
+            width: 98vw;
+            height: 98vh;
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            overflow: hidden;
+            display: flex;
+        }
+        .asciiArtHidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Hidden ASCII Art for Breakpoints -->
+<pre class="asciiArtHidden" data-breakpoint="desktop">
+@      ___            ___           ___           ___           ___           ___           ___     @
+@     /|  |          /\__\         /\  \         /\  \         /\  \         /|  |         /\__\    @
+@    |:|  |         /:/ _/_       _\:\  \       /::\  \       /::\  \       |:|  |        /:/ _/_   @
+@    |:|  |        /:/ /\__\     /\ \:\  \     /:/\:\  \     /:/\:\__\      |:|  |       /:/ /\  \  @
+</pre>
+
+<pre class="asciiArtHidden" data-breakpoint="tablet">
+@  ______            __         @
+@ /  __  \         _/  |_       @
+@ |  |  |  |      |   __/       @
+@ |  |__|  |      |  |          @
+@  \______/       |__|          @
+</pre>
+
+<pre class="asciiArtHidden" data-breakpoint="large-mobile">
+@  ~~~~       ~~~~ @
+@  ~~~~ ASCII ~~~~ @
+@  ~~~~ Art   ~~~~ @
+@  ~~~~       ~~~~ @
+</pre>
+
+<pre class="asciiArtHidden" data-breakpoint="small-mobile">
+@   :)    @
+@   :)    @
+@   :)    @
+</pre>
+
+<pre class="asciiArt"></pre>
+
+<script>
+    // Speed control: Adjust typing speed in milliseconds per line
+    const TYPING_SPEED = 10;
+
+    const breakpoints = {
+        desktop: 992,      // Min-width for desktop
+        tablet: 768,       // Min-width for tablet
+        largeMobile: 480,  // Min-width for large mobile
+        smallMobile: 0     // Default (below large mobile)
+    };
+
+    let typingInterval; // Stores reference to the typing interval
+    let currentAnimation = null; // Tracks the current animation
+
+    function getBreakpoint() {
+        const width = window.innerWidth;
+        if (width >= breakpoints.desktop) return "desktop";
+        if (width >= breakpoints.tablet) return "tablet";
+        if (width >= breakpoints.largeMobile) return "large-mobile";
+        return "small-mobile";
+    }
+
+    function getCharacterDimensions() {
+        const span = document.createElement("span");
+        span.style.fontFamily = "monospace";
+        span.style.visibility = "hidden";
+        span.textContent = "#";
+        document.body.appendChild(span);
+        const charWidth = span.getBoundingClientRect().width;
+        const charHeight = span.getBoundingClientRect().height;
+        document.body.removeChild(span);
+        return { charWidth, charHeight };
+    }
+
+    function createAsciiBox(text) {
+        const lines = text.split('\n').map(line => {
+            if (line.startsWith('@') && line.endsWith('@')) {
+                return line.slice(1, -1); // Remove only border markers '@'
+            }
+            return line;
+        });
+
+        const preElement = document.querySelector(".asciiArt");
+        const { charWidth, charHeight } = getCharacterDimensions();
+        const availableWidth = preElement.clientWidth;
+        const availableHeight = preElement.clientHeight;
+        const numCols = Math.floor(availableWidth / charWidth);
+        const numRows = Math.floor(availableHeight / charHeight);
+        const borderLine = `+${'-'.repeat(numCols - 2)}+`;
+        const emptyLine = `|${' '.repeat(numCols - 2)}|`;
+        const asciiBoxLines = [borderLine];
+
+        const topPaddingLines = Math.floor((numRows - lines.length - 2) / 2);
+        const bottomPaddingLines = numRows - lines.length - 2 - topPaddingLines;
+
+        for (let i = 0; i < topPaddingLines; i++) {
+            asciiBoxLines.push(emptyLine);
+        }
+
+        lines.forEach(line => {
+            const trimmedLineLength = line.length;
+            const paddingSpaces = Math.max(numCols - 2 - trimmedLineLength, 0);
+            const leftPadding = Math.floor(paddingSpaces / 2);
+            const rightPadding = paddingSpaces - leftPadding;
+            const paddedLine = `${' '.repeat(leftPadding)}${line}${' '.repeat(rightPadding)}`;
+            asciiBoxLines.push(`|${paddedLine}|`);
+        });
+
+        for (let i = 0; i < bottomPaddingLines; i++) {
+            asciiBoxLines.push(emptyLine);
+        }
+
+        asciiBoxLines.push(borderLine);
+        return asciiBoxLines;
+    }
+
+    function typeAsciiArt(lines) {
+        const preElement = document.querySelector(".asciiArt");
+        preElement.textContent = ""; // Clear current content
+        let lineIndex = 0;
+
+        // Stop existing animation if running
+        if (currentAnimation) {
+            clearTimeout(currentAnimation);
+            currentAnimation = null;
+        }
+
+        function typeLine() {
+            if (lineIndex < lines.length) {
+                preElement.textContent += lines[lineIndex] + '\n';
+                lineIndex++;
+                currentAnimation = setTimeout(typeLine, TYPING_SPEED); // Typing speed defined here
+            }
+        }
+
+        typeLine();
+    }
+
+    function updateAsciiBox() {
+        const preElement = document.querySelector(".asciiArt");
+        const currentBreakpoint = getBreakpoint();
+        const hiddenPreElement = document.querySelector(`.asciiArtHidden[data-breakpoint="${currentBreakpoint}"]`);
+        if (!hiddenPreElement) return;
+
+        const originalContent = hiddenPreElement.textContent.trim();
+        const asciiBoxLines = createAsciiBox(originalContent);
+
+        // Clear previous animation and content
+        if (typingInterval) clearTimeout(typingInterval);
+        preElement.textContent = "";
+
+        // Type the new ASCII art
+        typeAsciiArt(asciiBoxLines);
+    }
+
+    window.addEventListener('resize', updateAsciiBox);
+
+    // Initial Render
+    updateAsciiBox();
+</script>
+
+</body>
+</html>

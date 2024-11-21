@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive ASCII Art</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #000;
+            color: #06989A;
+            font-family: 'Roboto Mono', monospace;
+            overflow: hidden;
+        }
+
+        .asciiArt {
+            white-space: pre;
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            text-align: center;
+            font-size: clamp(8px, 1.4vw, 20px); /* Minimum font size for small screens */
+            line-height: 1.2em; /* Adjusted for readability */
+            max-width: 100%; /* Prevent overflow */
+            overflow: auto; /* Allow scrolling if needed */
+        }
+    </style>
+</head>
+<body>
+    <!-- ASCII art designs for different breakpoints -->
+    <script>
+        const designs = {
+            default: `
+@      ___            ___           ___           ___           ___           ___           ___     @
+@     /|  |          /\\__\\         /\\  \\         /\\  \\         /\\  \\         /|  |         /\\__\\    @
+@    |:|  |         /:/ _/_       _\\:\\  \\       /::\\  \\       /::\\  \\       |:|  |        /:/ _/_   @
+@    |:|  |        /:/ /\\__\\     /\\ \\:\\  \\     /:/\\:\\  \\     /:/\\:\\__\\      |:|  |       /:/ /\\  \\  @
+@  __|:|__|       /:/ /:/  /    _\\:\\ \\:\\  \\   /:/  \\:\\  \\   /:/ /:/  /    __|:|  |      /:/ /::\\  \\ @
+@ /::::\\__\\_____ /:/_/:/  /    /\\ \\:\\ \\:\\__\\ /:/__/ \\:\\__\\ /:/_/:/__/___ /\\ |:|__|____ /:/_/:/\\:\\__\\@
+@ ~~~~\\::::/___/ \\:\\/:/  /     \\:\\ \\:\\/:/  / \\:\\  \\ /:/  / \\:\\/:::::/  / \\:\\/:::::/__/ \\:\\/:/ /:/  /@
+@    |:|~~|      \\::/__/       \\:\\ \\::/  /   \\:\\  /:/  /   \\::/~~/~~~~   \\::/~~/~      \\::/ /:/  /  @
+@    |:|  |       \\:\\  \\        \\:\\/:/  /     \\:\\/:/  /     \\:\\~~\\        \\:\\~~\\        \\/_/:/  /   @
+@    |:|__|        \\:\\__\\        \\::/  /       \\::/  /       \\:\\__\\        \\:\\__\\         /:/  /    @
+@    |/__/          \\/__/         \\/__/         \\/__/         \\/__/         \\/__/         \\/__/     @
+            `,
+            mobile: `
+@      _  _       ___      __     _  _   @
+@     | || |     | __|    /__\\   | || |  @
+@     | __ |     | _|    | \\/ |  | __ |  @
+@     |_||_|     |___|    \\__/   |_||_|  @
+            `
+        };
+
+        function renderAsciiArt() {
+            const preElement = document.createElement('pre');
+            preElement.className = 'asciiArt';
+            document.body.innerHTML = ''; // Clear previous content
+            document.body.appendChild(preElement);
+
+            const width = window.innerWidth;
+            const design = width <= 500 ? designs.mobile : designs.default;
+
+            // Remove "@" borders
+            const lines = design.split('\n').map(line => {
+                if (line.startsWith('@') && line.endsWith('@')) {
+                    return line.slice(1, -1).trim();
+                }
+                return line.trim();
+            });
+
+            preElement.textContent = lines.join('\n');
+        }
+
+        // Initial render
+        renderAsciiArt();
+
+        // Listen for window resize to switch designs dynamically
+        window.addEventListener('resize', renderAsciiArt);
+    </script>
+</body>
+</html>

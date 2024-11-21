@@ -1,0 +1,180 @@
+<style>
+    .asciiArt, .asciiArt_mobile{
+         
+         white-space: pre;
+         width: 98vw;
+         height: 98vh;
+         padding: 0;
+         margin: 0;
+         box-sizing: border-box;
+         overflow: hidden;
+        line-height: 1.16;
+         font-size: 10px;
+         
+     }
+     .asciiArtHidden, .asciiArt_mobile-hidden {
+         display: none;
+     }
+      @media screen and (max-width: 600px) {
+         /* Styles for screens 600px or smaller */
+         .asciiArt {
+             display: none;
+         }
+         .asciiArt_mobile{
+             display: block;
+         }
+     }
+ </style>
+ 
+ <pre class= "asciiArtHidden" >
+ @      ___            ___           ___           ___           ___           ___           ___     @
+ @     /|  |          /\__\         /\  \         /\  \         /\  \         /|  |         /\__\    @
+ @    |:|  |         /:/ _/_       _\:\  \       /::\  \       /::\  \       |:|  |        /:/ _/_   @
+ @    |:|  |        /:/ /\__\     /\ \:\  \     /:/\:\  \     /:/\:\__\      |:|  |       /:/ /\  \  @
+ @  __|:|__|       /:/ /:/  /    _\:\ \:\  \   /:/  \:\  \   /:/ /:/  /    __|:|  |      /:/ /::\  \ @
+ @ /::::\__\_____ /:/_/:/  /    /\ \:\ \:\__\ /:/__/ \:\__\ /:/_/:/__/___ /\ |:|__|____ /:/_/:/\:\__\@
+ @ ~~~~\::::/___/ \:\/:/  /     \:\ \:\/:/  / \:\  \ /:/  / \:\/:::::/  / \:\/:::::/__/ \:\/:/ /:/  /@
+ @    |:|~~|       \::/__/       \:\ \::/  /   \:\  /:/  /   \::/~~/~~~~   \::/~~/~      \::/ /:/  / @
+ @    |:|  |        \:\  \        \:\/:/  /     \:\/:/  /     \:\~~\        \:\~~\        \/_/:/  /  @
+ @    |:|__|         \:\__\        \::/  /       \::/  /       \:\__\        \:\__\         /:/  /   @
+ @    |/__/           \/__/         \/__/         \/__/         \/__/         \/__/         \/__/    @
+ 
+ </pre>
+ <pre class="asciiArt"></pre>
+ <pre class="asciiArt_mobile-hidden">
+     __  _________        _____  ____  _  ______  
+     \ \/ /  ___\ \      / / _ \|  _ \| |/ / ___| 
+      \  /| |_   \ \ /\ / / | | | |_) | ' /\___ \ 
+      /  \|  _|   \ V  V /| |_| |  _  | . \ ___) |
+     /_/\_\_|      \_/\_/  \___/|_| \_\_|\_\____/                                       
+    </pre>
+    <pre class="asciiArt_mobile">                                   
+    </pre>
+ 
+ <script>
+     function calculateFontSize() {
+         const availableWidth = window.innerWidth * 0.98; // Buffer for width
+     const availableHeight = window.innerHeight * 0.97; // Buffer for height
+ 
+     const numCols = 80; // Default number of columns for ASCII art
+     const numRows = 45; // Default number of rows for ASCII art
+ 
+     // Calculate font size based on available space
+     const fontSizeByWidth = Math.floor(availableWidth / numCols);
+     const fontSizeByHeight = Math.floor(availableHeight / numRows);
+ 
+     // Use the smaller of the two to ensure it fits both dimensions
+     let fontSize = Math.min(fontSizeByWidth, fontSizeByHeight);
+ 
+     // Define max and min font size limits
+     const maxFontSize = 16; // Maximum font size in pixels
+     const minFontSize = 8; // Minimum font size in pixels
+ 
+     // Ensure the font size is within the max and min limits
+     fontSize = Math.min(Math.max(fontSize, minFontSize), maxFontSize);
+ 
+     return `${fontSize}px`;
+ }
+ 
+ function getCharacterDimensions(fontSize = "16px") {
+     const span = document.createElement("span");
+     span.style.fontFamily = "monospace";
+     span.style.fontSize = fontSize;
+     span.style.visibility = "hidden";
+     span.textContent = "#";
+     document.body.appendChild(span);
+     const charWidth = span.getBoundingClientRect().width;
+     const charHeight = span.getBoundingClientRect().height;
+     document.body.removeChild(span);
+     return { charWidth, charHeight };
+ }
+ 
+ function createAsciiBox(text) {
+     const availableWidth = window.innerWidth * 0.98; // Buffer for width
+     const availableHeight = window.innerHeight * 0.98; // Buffer for height
+ 
+     const fontSize = calculateFontSize(); // Adjusted based on both width and height
+     document.querySelector(".asciiArt").style.fontSize = fontSize;
+ 
+     const { charWidth, charHeight } = getCharacterDimensions(fontSize);
+ 
+     // Ensure integer column and row counts to avoid rounding issues
+     const numCols = Math.floor(availableWidth / charWidth);
+     const numRows = Math.floor(availableHeight / charHeight);
+ 
+     const lines = text.split("\n").map(line => {
+         if (line.startsWith("@") && line.endsWith("@")) {
+             return line.slice(1, -1); // Remove border markers
+         }
+         return line;
+     });
+ 
+     // Adjust border lengths based on calculated columns
+     const borderLine = `+${"-".repeat(numCols - 2)}+`;
+     const emptyLine = `|${" ".repeat(numCols - 2)}|`;
+     const asciiBoxLines = [borderLine];
+ 
+     // Calculate padding
+     const topPaddingLines = Math.max(Math.floor((numRows - lines.length - 2) / 2), 0);
+     const bottomPaddingLines = Math.max(numRows - lines.length - 2 - topPaddingLines, 0);
+ 
+     // Add top padding
+     for (let i = 0; i < topPaddingLines; i++) {
+         asciiBoxLines.push(emptyLine);
+     }
+ 
+     // Add content lines with proper padding
+     lines.forEach(line => {
+         const trimmedLineLength = Math.min(line.length, numCols - 2); // Trim if too long
+         const paddingSpaces = Math.max(numCols - 2 - trimmedLineLength, 0);
+         const leftPadding = Math.floor(paddingSpaces / 2);
+         const rightPadding = paddingSpaces - leftPadding;
+         const paddedLine = `${" ".repeat(leftPadding)}${line.substring(0, trimmedLineLength)}${" ".repeat(rightPadding)}`;
+         asciiBoxLines.push(`|${paddedLine}|`);
+     });
+ 
+     // Add bottom padding
+     for (let i = 0; i < bottomPaddingLines; i++) {
+         asciiBoxLines.push(emptyLine);
+     }
+ 
+     // Add bottom border
+     asciiBoxLines.push(borderLine);
+ 
+     return asciiBoxLines;
+ }
+ 
+ function initialAsciiBox() {
+     const preElement = document.querySelector(".asciiArt");
+     const originalContent = document.querySelector(".asciiArtHidden").textContent.trim();
+     const asciiBoxLines = createAsciiBox(originalContent);
+     const delay = 1000 / asciiBoxLines.length;
+     let lineIndex = 0;
+ 
+     function typeLine() {
+         if (lineIndex < asciiBoxLines.length) {
+             preElement.textContent += asciiBoxLines[lineIndex] + "\n";
+             lineIndex++;
+             setTimeout(typeLine, delay);
+         }
+     }
+     typeLine();
+ }
+ 
+ function updateAsciiBox() {
+     const preElement = document.querySelector(".asciiArt");
+     const originalContent = document.querySelector(".asciiArtHidden").textContent.trim();
+     const asciiBoxLines = createAsciiBox(originalContent);
+     preElement.textContent = asciiBoxLines.join("\n");
+ }
+ 
+ initialAsciiBox();
+ 
+ let resizeTimeout;
+ window.addEventListener("resize", () => {
+     clearTimeout(resizeTimeout);
+     resizeTimeout = setTimeout(updateAsciiBox, 200);
+ });
+ 
+ 
+ </script>
