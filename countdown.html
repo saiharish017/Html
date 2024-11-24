@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Black Friday Countdown</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .countdown {
+            font-size: 2rem;
+        }
+        .time-box {
+            display: inline-block;
+            margin: 10px;
+            position: relative;
+            height: 80px; /* Adjust height as needed */
+            overflow: hidden;
+        }
+        .number {
+            font-size: 3rem;
+            font-weight: bold;
+            display: inline-block;
+            position: absolute;
+            bottom: -100%; /* Start below the container */
+            animation: scrollUp 0.5s ease-out forwards;
+        }
+
+        @keyframes scrollUp {
+            from {
+                bottom: -100%; /* Start below the container */
+            }
+            to {
+                bottom: 0; /* End at the center of the container */
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Countdown to Black Friday</h1>
+    <div class="countdown">
+        <div class="time-box">
+            <span class="number" data-unit="days">00</span><br>Days
+        </div>
+        <div class="time-box">
+            <span class="number" data-unit="hours">00</span><br>Hours
+        </div>
+        <div class="time-box">
+            <span class="number" data-unit="minutes">00</span><br>Minutes
+        </div>
+        <div class="time-box">
+            <span class="number" data-unit="seconds">00</span><br>Seconds
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Set the target date for Black Friday
+            const targetDate = new Date("November 29, 2024 00:00:00").getTime();
+
+            function updateCountdown() {
+                const now = new Date().getTime();
+                const timeDiff = targetDate - now;
+
+                if (timeDiff < 0) {
+                    document.querySelector(".countdown").innerHTML = "🎉 Black Friday is here! 🎉";
+                    return;
+                }
+
+                const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+                updateNumber("days", days);
+                updateNumber("hours", hours);
+                updateNumber("minutes", minutes);
+                updateNumber("seconds", seconds);
+            }
+
+            function updateNumber(unit, value) {
+                const element = document.querySelector(`[data-unit='${unit}']`);
+                const currentValue = parseInt(element.textContent, 10) || 0;
+
+                if (currentValue !== value) {
+                    // Remove the animation class to reset it
+                    element.style.animation = "none";
+
+                    // Set a timeout to reapply the animation class
+                    setTimeout(() => {
+                        element.style.animation = "";
+                    }, 10);
+
+                    // Update the number
+                    element.textContent = String(value).padStart(2, "0");
+                }
+            }
+
+            // Update the countdown every second
+            setInterval(updateCountdown, 1000);
+
+            // Initial call to display the countdown immediately
+            updateCountdown();
+        });
+    </script>
+</body>
+</html>
