@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centered ASCII Art</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        .content-sticky_wrapper {
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f4f4f4;
+            border: 1px solid #ccc;
+        }
+
+        pre {
+            margin: 0;
+            white-space: pre;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-sizing: border-box;
+            border: 1px solid #ccc; /* Optional for visibility */
+            background-color: #fafafa; /* Optional for visibility */
+        }
+    </style>
+</head>
+<body>
+    <div class="content-sticky_wrapper">
+        <pre>+-----------------------------------------------------------------------------------+
+            |        XF.works: Scalable Design Systems for Brand, Product, and Experience       |
+            +-----------------------------------------------------------------------------------+
+            
+            +-----------------------------------------------------------------------------------+
+            |                                   Who We Are                                      |
+            +-----------------------------------------------------------------------------------+
+            | XF.works is a collective of elite design leaders who guide organizations through  |
+            | brand, product, and experience transformation. We bring unparalleled expertise in |
+            | creating and implementing scalable design systems that span from brand to UI to   |
+            | code, supporting large enterprises, startups, and investment portfolios           |
+            +-----------------------------------------------------------------------------------+</pre>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const wrappers = document.querySelectorAll(".content-sticky_wrapper");
+            const preElements = document.querySelectorAll("pre");
+
+            gsap.registerPlugin(ScrollTrigger);
+
+            // Dynamically center <pre> content
+            function updatePrePadding() {
+                preElements.forEach(pre => {
+                    const container = pre.parentElement; // Assume container is the parent of <pre>
+                    if (container) {
+                        const containerStyles = window.getComputedStyle(container);
+                        const containerWidth = container.clientWidth -
+                            parseFloat(containerStyles.paddingLeft) -
+                            parseFloat(containerStyles.paddingRight);
+                        const containerHeight = container.clientHeight -
+                            parseFloat(containerStyles.paddingTop) -
+                            parseFloat(containerStyles.paddingBottom);
+
+                        const preWidth = pre.scrollWidth;
+                        const preHeight = pre.scrollHeight;
+
+                        // Calculate padding to center content
+                        const paddingX = Math.max((containerWidth - preWidth) / 2, 0);
+                        const paddingY = Math.max((containerHeight - preHeight) / 2, 0);
+
+                        // Apply calculated padding
+                        pre.style.padding = `${paddingY}px ${paddingX}px`;
+                        pre.style.boxSizing = "border-box"; // Include padding in box size
+                        pre.style.display = "flex"; // Flexbox for alignment
+                        pre.style.alignItems = "center"; // Center vertically
+                        pre.style.justifyContent = "center"; // Center horizontally
+                    }
+                });
+            }
+
+            function onResize() {
+                updatePrePadding(); // Update padding on resize
+            }
+
+            // Initialize
+            updatePrePadding();
+
+            // Handle window resize
+            window.addEventListener("resize", onResize);
+
+            // Typing animation logic (if needed, integrate here)
+            // Example typing animation from the earlier code:
+            wrappers.forEach(wrapper => {
+                ScrollTrigger.create({
+                    trigger: wrapper,
+                    start: "top top",
+                    end: "bottom bottom",
+                    onEnter: () => console.log("Enter trigger"), // Replace with your animation logic
+                });
+            });
+        });
+    </script>
+</body>
+</html>
