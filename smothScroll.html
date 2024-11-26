@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smooth Scroll with GSAP and Free Scroll</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+    section {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2rem;
+      color: white;
+    }
+    .section-1 { background: lightcoral; }
+    .section-2 { background: lightblue; height: 200vh; }
+    .section-3 { background: lightgreen; }
+
+    /* Sticky Section 2 content */
+    .sticky-content {
+      position: sticky;
+      top: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 1rem;
+      color: white;
+      font-size: 2rem;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <section data-section class="section-1">Section 1</section>
+  <section data-section class="section-2" data-scroll="free">
+    Section 2 (Free Scroll)
+    <div class="sticky-content">
+      This is a sticky section inside Section 2.
+    </div>
+  </section>
+  <section data-section class="section-3">Section 3</section>
+
+  <script>
+    (() => {
+      gsap.registerPlugin(ScrollToPlugin);
+
+      const sections = Array.from(document.querySelectorAll('[data-section]'));
+      let isAnimating = false; // Prevent overlapping animations
+      let currentIndex = 0; // Track the current section index
+
+      // Scroll to a specific section with GSAP
+      function scrollToSection(index) {
+        if (isAnimating || index < 0 || index >= sections.length) return;
+        const targetSection = sections[index];
+        if (!targetSection) return;
+
+        isAnimating = true; // Lock animation
+        gsap.to(window, {
+          scrollTo: { y: targetSection.offsetTop, autoKill: false },
+          duration: 0.8, // Smooth scrolling duration
+          onComplete: () => {
+            currentIndex = index; // Update current index
+            setTimeout(() => {
+              isAnimating = false; // Unlock after delay
+            }, 2000); // 2-second delay
+          },
+        });
+      }
+
+      // Determine the current section index
+      function getSectionIndex() {
+        const scrollTop = window.scrollY;
+        return sections.findIndex((section) => {
+          const sectionTop = section.offsetTop;
+          const sectionBottom = sectionTop + section.offsetHeight;
+          return scrollTop >= sectionTop && scrollTop < sectionBottom;
+        });
+      }
+
+      // Handle wheel scroll
+      function handleScroll(event) {
+        if (isAnimating) return; // Prevent action during animation
+
+        const direction = event.deltaY > 0 ? 1 : -1; // Determine scroll direction
+        const nextIndex = currentIndex + direction;
+
+        if (nextIndex >= 0 && nextIndex < sections.length) {
+          // Skip the snapping if the current section is marked as free-scroll
+          const currentSection = sections[currentIndex];
+          const isFreeScroll = currentSection.getAttribute('data-scroll') === 'free';
+
+          if (!isFreeScroll) {
+            scrollToSection(nextIndex);
+          } else {
+            // When in free scroll section, handle the transition to next or prev section
+            if (window.scrollY >= sections[currentIndex].offsetTop + sections[currentIndex].offsetHeight - window.innerHeight) {
+              // If you are at the bottom of Section 2, allow scroll to next section (Section 3)
+              currentIndex = nextIndex;
+              scrollToSection(currentIndex);
+            } else if (window.scrollY <= sections[currentIndex].offsetTop) {
+              // If you are at the top of Section 2, allow scroll to previous section (Section 1)
+              currentIndex = nextIndex;
+              scrollToSection(currentIndex);
+            }
+          }
+        }
+      }
+
+      // Handle keyboard navigation
+      function handleKeyboard(event) {
+        if (isAnimating) return; // Prevent action during animation
+
+        let nextIndex = currentIndex;
+        if (event.key === "ArrowUp") {
+          nextIndex = currentIndex - 1; // Move to the previous section
+        } else if (event.key === "ArrowDown") {
+          nextIndex = currentIndex + 1; // Move to the next section
+        }
+
+        if (nextIndex >= 0 && nextIndex < sections.length) {
+          scrollToSection(nextIndex);
+        }
+      }
+
+      // Update index dynamically during manual scrolling
+      function updateIndexOnScroll() {
+        const naturalIndex = getSectionIndex();
+        if (naturalIndex !== -1) {
+          currentIndex = naturalIndex;
+        }
+      }
+
+      // Attach event listeners
+      window.addEventListener('wheel', handleScroll, { passive: false });
+      window.addEventListener('keydown', handleKeyboard); // Keyboard navigation
+      window.addEventListener('scroll', updateIndexOnScroll); // Track natural scroll position
+    })();
+  </script>
+</body>
+</html>

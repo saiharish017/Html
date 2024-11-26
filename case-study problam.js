@@ -1,5 +1,61 @@
 
 
+document.addEventListener("DOMContentLoaded", () => {
+    elements.forEach((element) => {
+        clearContainer(element.querySelector(".case-study_text"));
+    });
+});
+
+ document.addEventListener("DOMContentLoaded", function () {
+    setTimeout(() => {
+      // GSAP ScrollTo logic
+      const targetSection = document.getElementById("go-to"); // Replace with your section's ID
+
+      if (targetSection) {
+        gsap.to(window, {
+          duration: 0.5, // Duration of the scroll animation in seconds
+          scrollTo: {
+            y: targetSection, // Target section
+            offsetY: -30,       // No offset for now
+          },
+          ease: "power2.out", // Smooth easing
+          delay: 2,
+        });
+      }
+    }, 100); // Adjust delay as needed
+  });
+
+  //--------snap------
+//------------------case study index-------
+document.addEventListener("DOMContentLoaded", function () {
+    let baseZIndex = 190; // Starting z-index for Div 1
+
+    // Select all case-study wrappers
+    const wrappers = document.querySelectorAll(".section_case-studys");
+
+    wrappers.forEach((wrapper) => {
+        // Find the Div 1 (case_sticky-section)
+        const div1 = wrapper.querySelector('[data-div="1"]');
+        if (div1) {
+            // Assign z-index to Div 1
+            div1.style.zIndex = baseZIndex;
+
+            // Find the Div 2 (subcollection items inside case-study_image-collection)
+            const div2Items = wrapper.querySelectorAll('[data-div="2"]');
+            let subcollectionZIndex = baseZIndex - 1; // Start subcollection z-index at Div 1 - 1
+
+            div2Items.forEach((div2) => {
+                div2.style.zIndex = subcollectionZIndex; // Assign z-index to Div 2
+                subcollectionZIndex--; // Decrement for the next item
+            });
+        }
+
+        // Decrement baseZIndex for the next Div 1
+        baseZIndex -= 10;
+    });
+});
+
+
 
     // ------------------------- Logo Section -------------------------
 // Select the container div and body
@@ -164,8 +220,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const calculatedHeight = lines.length * lineHeight;
 
         // Add extra pixels as buffer
-        const bufferWidth = 4; // Extra pixels to add to the width
-        const bufferHeight = 4; // Extra pixels to add to the height
+        const bufferWidth = 15; // Extra pixels to add to the width
+        const bufferHeight = 10; // Extra pixels to add to the height
 
         return {
             width: calculatedWidth + bufferWidth,
@@ -295,14 +351,14 @@ document.addEventListener("DOMContentLoaded", () => {
 // -------------------------case study ------------
 document.addEventListener("DOMContentLoaded", () => {
     const elements = document.querySelectorAll(".case_sticky-section");
-
+   
     gsap.registerPlugin(ScrollTrigger);
 
     // Helper: Clear text content in the container
     function clearContainer(target) {
         target.textContent = ''; // Clear all text content
     }
-
+    
     // Helper: Wrap lines to fit within maxWidth
     function wrapLine(line, maxWidth) {
         const wrappedLines = [];
@@ -328,7 +384,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Helper: Dynamically calculate character width
     function getCharWidth(container) {
         const testSpan = document.createElement('span');
-        testSpan.textContent = 'M';
+        testSpan.textContent = '#';
         testSpan.style.font = getComputedStyle(container).font;
         testSpan.style.position = 'absolute';
         testSpan.style.visibility = 'hidden';
@@ -341,7 +397,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // Helper: Generate ASCII box dynamically for content
     function generateAsciiBox(content, container) {
         const charWidth = getCharWidth(container);
-        const maxWidthChars = Math.floor(container.clientWidth / charWidth) - 4; // Reserve space for "| " padding
+        const bufferWidth = 40; // Buffer in pixels
+        const adjustedWidth = container.clientWidth - bufferWidth; // Apply buffer
+        const maxWidthChars = Math.floor(adjustedWidth / charWidth) - 4; // Adjust maxWidthChars  space for "| " padding
         const contentLines = content.split('\n').flatMap((line) => wrapLine(line, maxWidthChars));
         const maxLength = Math.max(...contentLines.map((line) => line.length));
 
@@ -376,8 +434,9 @@ document.addEventListener("DOMContentLoaded", () => {
             textTarget.style.height = 'auto'; // Reset any manually set height
 
             // Now calculate the actual height after rendering the ASCII box
-            const computedHeight = textTarget.offsetHeight; // Use offsetHeight to get the full height
-            textTarget.style.height = `${computedHeight}px`; // Set the height to the calculated height
+            const bufferHeight = 20; // Buffer in pixels
+            const computedHeight = textTarget.offsetHeight + bufferHeight; // Add buffer
+            textTarget.style.height = `${computedHeight}px`; // Set the height with buffer
         }
     }
 
@@ -432,6 +491,7 @@ document.addEventListener("DOMContentLoaded", () => {
             trigger: element,
             start: "top top",
             end: "bottom bottom",
+            markers:true,
 
             onEnter: () => {
                 if (!typingController) {
@@ -447,11 +507,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (typingController) {
                     typingController = null;
                 }
+                clearContainer(element.querySelector(".case-study_text"));
+                
             },
             onLeaveBack: () => {
                 if (typingController) {
                     typingController = null;
                 }
+                clearContainer(element.querySelector(".case-study_text"));
+                
             },
         });
     });
@@ -474,7 +538,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
- 
     
     //-------------------------console animation-------------------
     
@@ -682,8 +745,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const calculatedHeight = lines.length * lineHeight;
 
         // Add extra pixels as buffer
-        const bufferWidth = 4; // Extra pixels to add to the width
-        const bufferHeight = 4; // Extra pixels to add to the height
+        const bufferWidth = 15; // Extra pixels to add to the width
+        const bufferHeight = 10; // Extra pixels to add to the height
 
         return {
             width: calculatedWidth + bufferWidth,
@@ -852,5 +915,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (target) target.textContent = '';
     }
 });
+
 
 
